@@ -1,0 +1,116 @@
+- Criar o diretório raiz dockerdesafio02
+
+---- Configurar o ngnix ---------
+
+- Criar o diretório ngnix no diretório raiz dockerdesafio02
+- criar o arquivo Dockerfile
+
+FROM nginx:1.15.0-alpine
+RUN rm /etc/nginx/conf.d/default.conf
+COPY ngnix.conf /etc/nginx/conf.d/
+
+- Criar o arquivo de configuração ngnix.conf
+
+server {
+    listen 80;
+    server_name sysmon.tecmint.lan;
+
+    location / {
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header Host $http_host;
+      proxy_set_header X-NginX-Proxy true;
+      proxy_pass         http://appnode:3000;
+    }
+}
+
+- Criar o arquivo docker-compose.yaml no diretório raiz dockerdesafio02
+--Alterar o docker-compose, adicionando o serviço nginx
+  nginx:
+    build: 
+      context: ngnix
+    image: nobre/ngnix:desafio02
+    container_name: nginx
+    ports:
+      - "8080:80"
+    networks:
+    - node-network
+
+---- Configurar o node  ---------
+
+- Criar o diretório node no diretório raiz dockerdesafio02
+- criar o arquivo Dockerfile 
+FROM node:15 
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
+EXPOSE 3000
+COPY . .
+CMD ["node","index.js"] 
+
+- alterar o arquivo docker-compose.yaml
+  appnode:
+    build: 
+      context: node
+    image: nobre/node:desafio02
+    container_name: appnode
+    networks:
+      - node-network
+    volumes:
+      - ./node:/usr/src/app
+    tty: true
+    ports:
+      - "3000:3000" 
+    
+-- no terminal acessar o diretório node.
+-- executar o container node.
+--iniciar um projeto node
+npm init
+--instalar o npm
+apt npm install
+--instalar express
+npm install express --save
+--instalar modulo mysql
+npm install mysql
+
+---- Configurar o mysql  ---------
+--Criar o diretório mysql no diretório raiz dockerdesafio02
+--Alterar o arquivo docker-compose, adicionando o serviço
+  appnode:
+    build: 
+      context: node
+    image: nobre/node:desafio02
+    container_name: appnode
+    networks:
+      - node-network
+    volumes:
+      - ./node:/usr/src/app
+    tty: true
+    ports:
+      - "3000:3000"
+
+--Executar levantar os serviços, realizar o build, inciar o container
+docker-compose up -d --build
+
+--Acessar o container mysql para executar comandos
+exec -it  dbmysql bash
+
+--Acessar o mysql com usuário root
+mysql -uroot -p
+
+--Listar as bases dados, verificar se a base nodedb existe
+show databases;
+
+--Acessar a base dados nodedb.
+use nodedb;
+
+--Criar a tabela people
+create table people(id int not null auto_increment, name varchar(255), primary key(id)) ;
+
+
+--Voltar ao diretório node
+Criar o arquivo index.js
+
+--Executar levantar os serviços, realizar o build, iniciar o container
+docker-compose up -d --build
+
+-- Acessar o browser através da URL http://localhost:8080/

@@ -1,0 +1,46 @@
+
+version: "3.9"
+services:
+  nginx:
+    build: 
+      context: ngnix
+    image: nobre/ngnix:desafio02
+    container_name: nginx
+    ports:
+      - "8080:80"
+    networks:
+    - node-network
+    
+  appnode:
+    build: 
+      context: node
+    image: nobre/node:desafio02
+    container_name: appnode
+    networks:
+      - node-network
+    volumes:
+      - ./node:/usr/src/app
+    tty: true
+    ports:
+      - "3000:3000" 
+
+  dbmysql:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: dbmysql
+    restart: always
+    tty: true
+    volumes:
+      - /home/nobre/docker/mysql/file_mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
+    networks:
+      - node-network
+
+networks:
+  node-network:
+    driver: bridge
+
+
