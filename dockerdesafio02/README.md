@@ -1,4 +1,4 @@
-<h2 align="center"> 02 - Primeiro Desafio Go - Docker Code Education -  </h2>
+<h2 align="center"> 02 - Segundo desafio Nginx com Node.js - Docker Code Education -  </h2>
 <p align="center">  
   <img alt="Made by Anderson Nobre" src="https://img.shields.io/badge/Made%20by-Anderson Nobre-%2304D361">
 
@@ -9,12 +9,13 @@
 </p>
 
 <h3> Objetivo </h3>
-<p> Criar uma image Docker visando atender o desafio baixo: </p>
+
 Nesse desafio você colocará em prática o que aprendemos em relação a utilização do nginx como proxy reverso. A idéia principal é que quando um usuário acesse o nginx, o mesmo fará uma chamada em nossa aplicação node.js. Essa aplicação por sua vez adicionará um registro em nosso banco de dados mysql, cadastrando um nome na tabela people.
 
 O retorno da aplicação node.js para o nginx deverá ser:
-
+<pre>
 <h1>Full Cycle Rocks!</h1>
+</pre>
 
 - Lista de nomes cadastrada no banco de dados.
 
@@ -24,18 +25,18 @@ Suba tudo em um repositório e faça a entrega.
 
 <h3> Solução </h3>
 
-
 ---- Configurar o ngnix ---------
 
 - Criar o diretório ngnix no diretório raiz dockerdesafio02
 - criar o arquivo Dockerfile
-
+<pre>
 FROM nginx:1.15.0-alpine
 RUN rm /etc/nginx/conf.d/default.conf
 COPY ngnix.conf /etc/nginx/conf.d/
+</pre>
 
 - Criar o arquivo de configuração ngnix.conf
-
+<pre>
 server {
     listen 80;
     server_name sysmon.tecmint.lan;
@@ -48,9 +49,11 @@ server {
       proxy_pass         http://appnode:3000;
     }
 }
+</pre>
 
 - Criar o arquivo docker-compose.yaml no diretório raiz dockerdesafio02
 --Alterar o docker-compose, adicionando o serviço nginx
+<pre>
   nginx:
     build: 
       context: ngnix
@@ -60,19 +63,22 @@ server {
       - "8080:80"
     networks:
     - node-network
-
+</pre>
 ---- Configurar o node  ---------
 
 - Criar o diretório node no diretório raiz dockerdesafio02
 - criar o arquivo Dockerfile 
+<pre>
 FROM node:15 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 EXPOSE 3000
 COPY . .
 CMD ["node","index.js"] 
+</pre>
 
-- alterar o arquivo docker-compose.yaml
+- alterar o arquivo docker-compose.yaml]
+<pre>
   appnode:
     build: 
       context: node
@@ -85,34 +91,44 @@ CMD ["node","index.js"]
     tty: true
     ports:
       - "3000:3000" 
-    
--- no terminal acessar o diretório node.
+</pre>
+<pre>
+ no terminal acessar o diretório node.
 -- executar o container node.
+
 --iniciar um projeto node
 npm init
+
 --instalar o npm
 apt npm install
+
 --instalar express
 npm install express --save
+
 --instalar modulo mysql
 npm install mysql
 
 ---- Configurar o mysql  ---------
 --Criar o diretório mysql no diretório raiz dockerdesafio02
 --Alterar o arquivo docker-compose, adicionando o serviço
-  appnode:
-    build: 
-      context: node
-    image: nobre/node:desafio02
-    container_name: appnode
+</pre>
+<pre>
+  dbmysql:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: dbmysql
+    restart: always
+    tty: true
+    volumes:
+      - /home/nobre/docker/mysql/file_mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
     networks:
       - node-network
-    volumes:
-      - ./node:/usr/src/app
-    tty: true
-    ports:
-      - "3000:3000"
-
+</pre>
+<pre>
 --Executar levantar os serviços, realizar o build, inciar o container
 docker-compose up -d --build
 
@@ -137,5 +153,5 @@ Criar o arquivo index.js
 
 --Executar levantar os serviços, realizar o build, iniciar o container
 docker-compose up -d --build
-
+</pre>
 -- Acessar o browser através da URL http://localhost:8080/
