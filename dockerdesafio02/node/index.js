@@ -11,7 +11,7 @@ const config = {
 const mysql = require('mysql');
 const connection = mysql.createConnection(config);
 
-const sql = `INSERT INTO people(name) values('Anderson')`;
+const sql = `INSERT INTO people(name) values('Nobre')`;
 connection.query(sql);
 
 let result = '<h1>Full Cycle Rocks!</h1>'

@@ -4,7 +4,7 @@ services:
   nginx:
     build: 
       context: ngnix
-    image: nobre/ngnix:desafio02
+    #image: nobre/ngnix:desafio02
     container_name: nginx
     ports:
       - "8080:80"
@@ -14,12 +14,12 @@ services:
   appnode:
     build: 
       context: node
-    image: nobre/node:desafio02
+    #image: nobre/node:desafio02
     container_name: appnode
     networks:
       - node-network
-    volumes:
-      - ./node:/usr/src/app
+   # volumes:
+    #  - ./node:/usr/src/app
     tty: true
     ports:
       - "3000:3000" 

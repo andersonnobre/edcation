@@ -75,18 +75,20 @@ npm install mysql
 ---- Configurar o mysql  ---------
 --Criar o diretório mysql no diretório raiz dockerdesafio02
 --Alterar o arquivo docker-compose, adicionando o serviço
-  appnode:
-    build: 
-      context: node
-    image: nobre/node:desafio02
-    container_name: appnode
+    dbmysql:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: dbmysql
+    restart: always
+    tty: true
+    volumes:
+      - /home/nobre/docker/mysql/file_mysql:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=root
     networks:
       - node-network
-    volumes:
-      - ./node:/usr/src/app
-    tty: true
-    ports:
-      - "3000:3000"
 
 --Executar levantar os serviços, realizar o build, inciar o container
 docker-compose up -d --build
