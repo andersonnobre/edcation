@@ -11,7 +11,7 @@ const config = {
 const mysql = require('mysql');
 const connection = mysql.createConnection(config);
 
-const sql = `INSERT INTO people(name) values('Nobre')`;
+const sql = `INSERT INTO people(name) values('Camila')`;
 connection.query(sql);
 
 let result = '<h1>Full Cycle Rocks!</h1>'
@@ -26,6 +26,7 @@ connection.query(query, function (err, results) {
 });
 
 connection.end(); 
+
 
 app.get('/', (req, res) => {
     res.send(result)

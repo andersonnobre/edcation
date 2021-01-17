@@ -10,19 +10,25 @@ services:
       - "8080:80"
     networks:
     - node-network
-    
+    depends_on:
+      - appnode
+
   appnode:
     build: 
       context: node
     #image: nobre/node:desafio02
     container_name: appnode
+    entrypoint: dockerize -wait tcp://dbmysql:3306 -timeout 10s  node index.js 
+    #command: node index.js 
     networks:
       - node-network
-   # volumes:
-    #  - ./node:/usr/src/app
+    volumes:
+      - ./node:/usr/scr/app/
     tty: true
     ports:
       - "3000:3000" 
+    depends_on:
+      - dbmysql
 
   dbmysql:
     image: mysql:5.7
